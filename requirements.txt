@@ -1,0 +1,33 @@
+# NetSentinel - Network Traffic Analyzer & Anomaly Detector
+# Python 3.8+ required
+
+# Core dependencies
+scapy>=2.5.0           # Packet capture and parsing
+
+# Database
+# SQLite3 is included in Python standard library
+
+# Dashboard
+streamlit>=1.28.0       # Web-based dashboard
+
+# Data processing
+pandas>=2.0.0          # Data manipulation (optional, for advanced analysis)
+numpy>=1.24.0          # Numerical operations (optional)
+
+# Visualization
+matplotlib>=3.7.0      # Basic plotting
+plotly>=5.18.0         # Interactive plots for Streamlit
+
+# Machine Learning (optional - for advanced ML features)
+scikit-learn>=1.3.0    # Pre-built ML algorithms
+
+# Development dependencies
+pytest>=7.4.0          # Testing framework
+pytest-cov>=4.1.0      # Test coverage
+black>=23.0.0          # Code formatting
+flake8>=6.1.0          # Linting
+mypy>=1.5.0            # Type checking
+
+# Optional dependencies
+pyvis>=0.3.2           # Network graph visualization
+networkx>=3.1          # Graph algorithms
