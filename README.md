@@ -1,11 +1,11 @@
-# 🔍 NetSentinel: AI-Driven Network Traffic Analyzer & Anomaly Detector
+#  NetSentinel: AI-Driven Network Traffic Analyzer & Anomaly Detector
 
 A comprehensive real-time network monitoring system that captures traffic, visualizes network topology as a graph, stores data in a database, and uses Machine Learning to detect anomalies.
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-## 📋 Table of Contents
+##  Table of Contents
 
 - [Features](#-features)
 - [Architecture](#-architecture)
@@ -17,37 +17,37 @@ A comprehensive real-time network monitoring system that captures traffic, visua
 - [Project Structure](#-project-structure)
 - [Contributing](#-contributing)
 
-## ✨ Features
+##  Features
 
-### 📡 Real-Time Packet Capture
+###  Real-Time Packet Capture
 
 - Capture network packets using Scapy
 - Parse TCP, UDP, and ICMP protocols
 - Extract source/destination IPs, ports, flags, and payload
 - Thread-safe packet processing with queues
 
-### 💾 Database Storage
+###  Database Storage
 
 - SQLite database for persistent storage
 - Optimized schema with proper indexing
 - Bulk insert for performance
 - Aggregation queries for analytics
 
-### 🕸️ Network Graph Visualization
+###  Network Graph Visualization
 
 - Represent network as vertices (IPs) and edges (connections)
 - Calculate degree centrality and clustering coefficients
 - Detect hub nodes and isolated components
 - Export to vis.js format for web visualization
 
-### 🤖 ML-Powered Anomaly Detection
+###  ML-Powered Anomaly Detection
 
 - **Statistical Detection**: Z-score based outlier detection
 - **Rule-Based Detection**: Security heuristics (port scan, DDoS, SYN flood patterns)
 - **Machine Learning**: Decision Tree (ID3), K-Means Clustering, Naive Bayes, Linear Regression
 - **Ensemble Scoring**: Weighted combination of all 3 methods
 
-### 📊 Interactive Dashboard
+###  Interactive Dashboard
 
 - Streamlit-based web interface with four tabs
 - Live traffic statistics with auto-refresh
@@ -56,7 +56,7 @@ A comprehensive real-time network monitoring system that captures traffic, visua
 - Alert management with severity filtering
 - Analytics with per-IP analysis and protocol breakdown
 
-## 🏗️ Architecture
+##  Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -77,7 +77,7 @@ A comprehensive real-time network monitoring system that captures traffic, visua
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## 📦 Installation
+##  Installation
 
 ### Prerequisites
 
@@ -110,7 +110,7 @@ pip install -r requirements.txt
 pip install scapy streamlit
 ```
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### 1. Start the Dashboard
 
@@ -140,7 +140,7 @@ python main.py --mode train
 python main.py --mode analyze
 ```
 
-## 📖 Usage
+##  Usage
 
 ### Command Line Options
 
@@ -201,7 +201,7 @@ sniffer.add_callback(on_packet)
 sniffer.start()
 ```
 
-## 🔬 Technical Deep Dive
+##  Technical Deep Dive
 
 ### Packet Parsing
 
@@ -319,7 +319,7 @@ INSERT operations, enabling zero-latency alert escalation:
 | `trg_alert_high_priority` | Alert with severity ≥ 3 (HIGH) | Appends `[AUTO-ESCALATED at <datetime>]` to the alert description |
 | `trg_large_packet_flag`   | Traffic log with size > 10 000 | Sets `is_anomaly = 1` for the inserted record                     |
 
-## 📚 Academic Concepts Applied
+##  Academic Concepts Applied
 
 This project demonstrates concepts from multiple courses:
 
@@ -399,7 +399,7 @@ locking is needed.
 (`threading.local()`) to give each thread its own SQLite connection, with WAL
 (Write-Ahead Logging) mode enabled for concurrent readers.
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 net-sentinel/
@@ -458,7 +458,7 @@ net-sentinel/
     └── ...
 ```
 
-## 🧪 Testing
+##  Testing
 
 ```bash
 # Run all tests (83 tests)
@@ -468,14 +468,14 @@ pytest tests/
 pytest tests/ --cov=netsentinel --cov-report=html
 ```
 
-## 🔒 Security Considerations
+##  Security Considerations
 
 - **Packet capture requires administrator privileges** on most systems
 - The simulated sniffer mode is safe for development/demo
 - Be mindful of privacy when capturing real network traffic
 - Store captured data securely
 
-## 🚧 Future Enhancements
+##  Future Enhancements
 
 - [x] Real-time web-based graph visualization with vis.js
 - [ ] Deep learning models (LSTM, Autoencoder)
@@ -484,11 +484,11 @@ pytest tests/ --cov=netsentinel --cov-report=html
 - [ ] REST API for external integrations
 - [ ] Docker containerization
 
-## 📄 License
+##  License
 
 MIT License - See LICENSE file for details.
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 - Scapy library for packet manipulation
 - Streamlit for the dashboard framework
