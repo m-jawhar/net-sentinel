@@ -317,7 +317,7 @@ class DashboardApp:
                     }
                 )
 
-            st.dataframe(data, use_container_width=True)
+            st.dataframe(data, width='stretch')
         else:
             st.info("No packets captured yet. Start capture to see traffic.")
 
@@ -393,7 +393,7 @@ class DashboardApp:
                     }
                 )
 
-            st.dataframe(data, use_container_width=True)
+            st.dataframe(data, width='stretch')
 
         # Graph visualization (using Streamlit's built-in)
         st.subheader("Connection Graph")
@@ -410,7 +410,20 @@ class DashboardApp:
                 <head>
                     <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
                     <style>
-                        #network {{ width: 100%; height: 500px; border: 1px solid #ccc; background: #1e1e2e; }}
+                        body {{ margin: 0; }}
+                        #network {{ width: 100%; height: 500px; border: 1px solid #444; border-radius: 8px; background: #1e1e2e; }}
+                        div.vis-tooltip {{
+                            white-space: pre-line;
+                            background-color: #2a2a3e !important;
+                            color: #e0e0e0 !important;
+                            border: 1px solid #555 !important;
+                            border-radius: 6px !important;
+                            padding: 8px 12px !important;
+                            font-family: 'Segoe UI', system-ui, sans-serif;
+                            font-size: 13px;
+                            line-height: 1.6;
+                            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+                        }}
                     </style>
                 </head>
                 <body>
@@ -431,7 +444,7 @@ class DashboardApp:
                 </body>
                 </html>
                 """
-                st.components.v1.html(graph_html, height=520)
+                st.iframe(graph_html, height=520)
             except Exception as e:
                 st.warning(f"Could not render interactive graph: {e}")
                 st.json(
@@ -526,7 +539,7 @@ class DashboardApp:
         st.subheader("Flagged IP Addresses")
         flagged_ips = self._get_flagged_ips()
         if flagged_ips:
-            st.dataframe(flagged_ips, use_container_width=True)
+            st.dataframe(flagged_ips, width='stretch')
         else:
             st.success("No flagged IPs detected.")
 
@@ -582,7 +595,7 @@ class DashboardApp:
                     }
                 )
 
-            st.dataframe(data, use_container_width=True)
+            st.dataframe(data, width='stretch')
 
         # Anomaly trend
         st.subheader("Anomaly Trend")

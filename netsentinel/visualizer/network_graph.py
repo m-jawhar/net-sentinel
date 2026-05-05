@@ -8,10 +8,11 @@ Applies Graph Theory concepts (Sem 4):
 - Connectivity analysis
 """
 
-import heapq
-from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Dict, Set, List, Tuple, Optional, Any
+from collections import defaultdict, deque
+import heapq
+import json
 
 
 @dataclass
@@ -346,12 +347,12 @@ class NetworkGraph:
         if src_ip == dst_ip:
             return [src_ip]
 
-        # BFS
+        # BFS using deque for O(1) popleft
         visited = {src_ip}
-        queue = [(src_ip, [src_ip])]
+        bfs_queue = deque([(src_ip, [src_ip])])
 
-        while queue:
-            current, path = queue.pop(0)
+        while bfs_queue:
+            current, path = bfs_queue.popleft()
 
             for neighbor in self.get_neighbors(current, "both"):
                 if neighbor == dst_ip:
@@ -359,7 +360,7 @@ class NetworkGraph:
 
                 if neighbor not in visited:
                     visited.add(neighbor)
-                    queue.append((neighbor, path + [neighbor]))
+                    bfs_queue.append((neighbor, path + [neighbor]))
 
         return None
 
@@ -381,13 +382,17 @@ class NetworkGraph:
         return components
 
     def _dfs(self, ip: str, visited: Set[str], component: Set[str]):
-        """Depth-first search helper for connected components."""
-        visited.add(ip)
-        component.add(ip)
-
-        for neighbor in self.get_neighbors(ip, "both"):
-            if neighbor not in visited:
-                self._dfs(neighbor, visited, component)
+        """Iterative DFS for connected components (avoids recursion limit)."""
+        stack = [ip]
+        while stack:
+            node = stack.pop()
+            if node in visited:
+                continue
+            visited.add(node)
+            component.add(node)
+            for neighbor in self.get_neighbors(node, "both"):
+                if neighbor not in visited:
+                    stack.append(neighbor)
 
     def _is_internal_ip(self, ip: str) -> bool:
         """Check if an IP is in a private range."""
@@ -439,8 +444,8 @@ class NetworkGraph:
         """
         nodes = []
         for ip, vertex in self.vertices.items():
-            # Size nodes by degree
-            size = max(10, min(50, vertex.degree * 5))
+            # Size nodes by degree (compact so edges stay visible)
+            size = max(6, min(25, 6 + vertex.degree * 2))
 
             # Color by type
             if vertex.is_anomalous:
@@ -456,7 +461,7 @@ class NetworkGraph:
                     "label": ip,
                     "size": size,
                     "color": color,
-                    "title": f"Degree: {vertex.degree}<br>Packets: {vertex.packet_count}<br>Bytes: {vertex.total_bytes}",
+                    "title": f"Degree: {vertex.degree}\nPackets: {vertex.packet_count}\nBytes: {vertex.total_bytes}",
                 }
             )
 
@@ -471,7 +476,7 @@ class NetworkGraph:
                     "to": dst,
                     "width": width,
                     "arrows": "to" if not edge.is_bidirectional else "to,from",
-                    "title": f"Packets: {edge.weight}<br>Bytes: {edge.byte_count}<br>Protocols: {', '.join(edge.protocols)}",
+                    "title": f"Packets: {edge.weight}\nBytes: {edge.byte_count}\nProtocols: {', '.join(edge.protocols)}",
                 }
             )
 

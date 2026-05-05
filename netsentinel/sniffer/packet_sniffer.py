@@ -105,7 +105,7 @@ class PacketSniffer:
                     try:
                         self.packet_queue.get_nowait()
                         self.packet_queue.put_nowait(packet_info)
-                    except:
+                    except queue.Empty:
                         pass
 
                 # Call registered callbacks
@@ -322,7 +322,7 @@ class SimulatedSniffer(PacketSniffer):
                     try:
                         self.packet_queue.get_nowait()
                         self.packet_queue.put_nowait(packet_info)
-                    except:
+                    except queue.Empty:
                         pass
 
                 # Call callbacks

@@ -12,17 +12,18 @@ Applies Machine Learning concepts (Sem 4):
 - Feature-based detection
 """
 
-import math
 import pickle
-from collections import defaultdict
+from typing import List, Dict, Optional, Tuple, Any
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from collections import defaultdict
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+import math
 
-from ..database.models import Alert, AlertSeverity, AlertType
 from ..sniffer.packet_parser import PacketInfo
-from .feature_extractor import FeatureExtractor, FeatureScaler
+from ..database.models import Alert, AlertType, AlertSeverity
+from .feature_extractor import FeatureExtractor, TrafficFeatures, FeatureScaler
+from .model_trainer import DecisionTreeClassifier, KMeansCluster, NaiveBayesClassifier
 
 
 @dataclass
@@ -199,6 +200,12 @@ class RuleBasedDetector:
         self._window_start = datetime.now()
         self._window_duration = 60  # seconds
 
+        # De-duplication: only alert once per IP per rule per window
+        self._alerted_port_scan: set = set()
+        self._alerted_high_rate: set = set()
+        self._alerted_ddos: set = set()
+        self._alerted_syn_flood: set = set()
+
     def _reset_window_if_needed(self):
         """Reset tracking window periodically."""
         now = datetime.now()
@@ -207,6 +214,10 @@ class RuleBasedDetector:
             self._ip_packet_count.clear()
             self._port_connections.clear()
             self._syn_count.clear()
+            self._alerted_port_scan.clear()
+            self._alerted_high_rate.clear()
+            self._alerted_ddos.clear()
+            self._alerted_syn_flood.clear()
             self._window_start = now
 
     def check_packet(self, packet: PacketInfo) -> List[AnomalyResult]:
@@ -263,7 +274,8 @@ class RuleBasedDetector:
 
         # Rule 3: Port scan detection (many ports from single source)
         unique_ports = len(self._port_connections[packet.src_ip])
-        if unique_ports > 20:
+        if unique_ports > 20 and packet.src_ip not in self._alerted_port_scan:
+            self._alerted_port_scan.add(packet.src_ip)
             anomalies.append(
                 AnomalyResult(
                     is_anomaly=True,
@@ -281,7 +293,8 @@ class RuleBasedDetector:
 
         # Rule 4: High packet rate (potential DDoS) — absolute threshold
         packet_count = self._ip_packet_count[packet.src_ip]
-        if packet_count > 100:  # More than 100 packets in window
+        if packet_count > 100 and packet.src_ip not in self._alerted_high_rate:
+            self._alerted_high_rate.add(packet.src_ip)
             anomalies.append(
                 AnomalyResult(
                     is_anomaly=True,
@@ -304,7 +317,8 @@ class RuleBasedDetector:
         if len(self._ip_packet_count) >= 2:
             total_all = sum(self._ip_packet_count.values())
             avg_count = total_all / len(self._ip_packet_count)
-            if avg_count > 0 and packet_count >= 10 * avg_count:
+            if avg_count > 0 and packet_count >= 10 * avg_count and packet.src_ip not in self._alerted_ddos:
+                self._alerted_ddos.add(packet.src_ip)
                 anomalies.append(
                     AnomalyResult(
                         is_anomaly=True,
@@ -326,7 +340,8 @@ class RuleBasedDetector:
         if packet.protocol == "TCP" and packet.flags and "SYN" in packet.flags:
             self._syn_count[packet.src_ip] += 1
             syn_count = self._syn_count[packet.src_ip]
-            if syn_count > 50:
+            if syn_count > 50 and packet.src_ip not in self._alerted_syn_flood:
+                self._alerted_syn_flood.add(packet.src_ip)
                 anomalies.append(
                     AnomalyResult(
                         is_anomaly=True,

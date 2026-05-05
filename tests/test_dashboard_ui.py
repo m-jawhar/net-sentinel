@@ -151,8 +151,10 @@ def _make_dashboard(mock_st):
     # st.button returns False (no resolve button clicked)
     mock_st.button.return_value = False
 
-    # st.components.v1.html — for vis.js graph
+    # st.components.v1.html — kept for any legacy calls
     mock_st.components = MagicMock()
+    # st.iframe — replaces st.components.v1.html for vis.js graph
+    mock_st.iframe = MagicMock()
 
     # st.fragment — decorator that just calls the function immediately
     def fake_fragment(func=None, *, run_every=None):
@@ -310,11 +312,11 @@ class TestDashboardUILayer(unittest.TestCase):
         self.assertTrue(self.mock_st.dataframe.called)
 
     def test_render_network_graph_vis_js(self):
-        """Should render vis.js HTML component."""
+        """Should render vis.js HTML via st.iframe."""
         self.dashboard._render_network_graph()
-        # st.components.v1.html should be called with the vis.js graph
-        self.mock_st.components.v1.html.assert_called()
-        html_arg = self.mock_st.components.v1.html.call_args[0][0]
+        # st.iframe should be called with the vis.js graph HTML
+        self.mock_st.iframe.assert_called()
+        html_arg = self.mock_st.iframe.call_args[0][0]
         self.assertIn("vis-network", html_arg)
         self.assertIn("vis.DataSet", html_arg)
 
